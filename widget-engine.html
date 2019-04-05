@@ -1,0 +1,188 @@
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js' type='text/javascript'></script>
+<script>
+const pageType = "debug";
+</script>
+
+
+<!-- --------------------------CUT------------------------ -->
+
+
+<p class="reddit-rss-widget"></p>
+<p class="iandiwatching-rss-widget"></p>
+<p class="iandicoding-rss-widget"></p>
+<p class="iandigaming-rss-widget"></p>
+<p class="dreaddymck-blogspot-rss-widget"></p>
+<p class="dreaddymck-rss-widget"></p>
+<p class="listgrotto-rss-widget"></p>
+<script src='https://cdn.jsdelivr.net/gh/dreaddymck/Themeswear-Gossip-blogger-template@master/widget-engine.js' type='text/javascript'></script>
+<script language='javascript' type='text/javascript'>//<![CDATA[
+"use strict"
+const widget_client =  {    
+    init: function(){
+        let r = new widget_engine();
+        r.keys = {blogger:""};
+        r.hide_title("#HTML1 > h2");
+        r.settings = [
+            // reddit.search.blogspot.com feed
+            {
+                display:{
+                    "":["debug","item"],
+                    "acidstainpro.blogspot.com":["debug","searchQuery"],
+                    "iandigaming.blogspot.com":["debug","searchQuery"],
+                    "iandicoding.blogspot.com":["debug","searchQuery"],
+                    "iandiwatching.blogspot.com":["debug","searchQuery"],
+                    "dreaddymck.blogspot.com":["debug","searchQuery"],             
+                },
+                config:{ 
+                    url: "https://www.reddit.com/search.json", 
+                    target: ".reddit-rss-widget",
+                    header:{title: "/r/",url:"https://reddit.com/"},
+                    truncate:600,
+                    render: r.reddit_render,
+                    search:{ after:"", before:"", category:"", count:"", include_facets:"", limit:1, q: r.query(), restrict_sr:"", show:"", sort:"new", sr_detail:"", t:"", type:"" }
+                },
+                client:r.client 
+            },                                                         
+            // iandiwatching.blogspot.com feed
+            {
+                display:{
+                    "":["debug","item"],
+                    "acidstainpro.blogspot.com":["debug","item"],
+                    "iandicoding.blogspot.com":["debug","item"],
+                    "dreaddymck.blogspot.com":["debug","item"],                                   
+                },
+                config:{ 
+                    url: "https://www.googleapis.com/blogger/v3/blogs/8285412304945711319/posts?maxResults=1&key=" + r.keys.blogger,
+                    target: ".iandiwatching-rss-widget",
+                    header:{title: "i & i watching",url:"https://iandiwatching.blogspot.com"},
+                    truncate:600,
+                    render:r.blogger_render,
+                },
+                client:r.client, 
+            },
+            // iandicoding.blogspot.com feed
+            {
+                display: {
+                    "":["debug","item"],
+                    "acidstainpro.blogspot.com":["index"],
+                    "iandigaming.blogspot.com":["index"],
+                    "iandicoding.blogspot.com":["index"],
+                    "iandiwatching.blogspot.com":["index"],                    
+                },
+                config: { 
+                    url: "https://www.googleapis.com/blogger/v3/blogs/577275532030213282/posts?maxResults=1&key=" + r.keys.blogger,
+                    target: ".iandicoding-rss-widget",
+                    header:{title: "i & i coding",url:"https://iandicoding.blogspot.com"},
+                    truncate:600,
+                    render:r.blogger_render,
+                },
+                client:r.client, 
+            }, 
+            //-- iandigaming.blogspot.com JSON CLIENT 
+            {
+                display: {
+                    "":["debug","item"],
+                    "acidstainpro.blogspot.com":["debug","item"],
+                    "iandiwatching.blogspot.com":["debug","item"],
+                    "dreaddymck.blogspot.com":["debug","item"],                    
+                },
+                config: { 
+                    url: "https://www.googleapis.com/blogger/v3/blogs/2500629529685531858/posts?maxResults=1&key=" + r.keys.blogger,
+                    target: ".iandigaming-rss-widget",
+                    header:{title: "i & i gaming",url:"https://iandigaming.blogspot.com"},
+                    truncate:600,
+                    render:r.blogger_render, 
+                },
+                client:r.client,  
+            },            
+            //-- dreaddymck-blogspot.com JSON CLIENT  -- 
+            {
+                display: {
+                    "":["debug","item"],
+                    "acidstainpro.blogspot.com":["debug","searchQuery"],
+                    "dreaddymck.blogspot.com":["debug","searchQuery"],
+                },
+                config: { 
+                    url: "https://www.googleapis.com/blogger/v3/blogs/8204170489529836754/posts?maxResults=1&key=" + r.keys.blogger,
+                    target: ".dreaddymck-blogspot-rss-widget",
+                    header:{title: "i & i dreaddymck",url:"https://dreaddymck.blogspot.com"},
+                    truncate:600,
+                    render:r.blogger_render, 
+                },
+                client:r.client, 
+            },
+            //-- DREADDYMCK.COM HIGHLIGHT SONG
+            {
+                display: {
+                    "":["debug","item"],
+                    "acidstainpro.blogspot.com":["index"],
+                    "dreaddymck.blogspot.com":["index"],                    
+                },
+                config: { 
+                    url: "https://dreaddymck.com/wp-json/wp/v2/posts?search=MISS LADY",
+                    target: ".dreaddymck-rss-widget",
+                    widget:"#HTML1", 
+                    header:{title: "dreaddymck.com",url:"https://dreaddymck.com"},
+                    truncate:600,
+                    render:r.wp_render,  
+                },
+                client:r.client,
+            }, 
+            //-- listgrotto.com for external sites  -
+            {
+                display: {
+                    "":["debug","item"],
+                    "acidstainpro.blogspot.com":["debug","item","searchLabel","static_page"],
+                    "iandigaming.blogspot.com":["debug","item","searchLabel","static_page"],
+                    "iandicoding.blogspot.com":["debug","item","searchLabel","static_page"],
+                    "iandiwatching.blogspot.com":["searchLabel","static_page"],
+                    "dreaddymck.blogspot.com":["debug","item","searchLabel","static_page"],                    
+                },
+                config: { 
+                    url: "https://listgrotto.com/wp-json/wp/v2/posts?per_page=1",
+                    target: ".listgrotto-rss-widget",
+                    header:{title: "Listgrotto.com",url:"https://listgrotto.com"},
+                    truncate:600,
+                    render:r.wp_render,  
+                },
+                client:r.client,            
+            },
+        ]
+        // enabled pagination on wordpress front page
+        if(typeof paginate !== "undefined" && ! paginate.enabled && jQuery("body").hasClass("home") ) {            
+            paginate.func = widget_client.init;
+            paginate.enabled = true;
+            paginate.setup();            
+        }
+        r.init();
+    
+        return;      
+    },
+    page: {
+        set: function(id,value) {
+            if(typeof paginate !== "undefined" && paginate.enabled){
+                id = window.btoa(id)
+                if(!paginate.paging[id]){ paginate.paging[id] = []; }
+                paginate.paging[id][paginate.paging.page] = value;
+            }
+        },
+        wordpress: function(){ 
+            let res = "";
+            if(typeof paginate !== "undefined" && paginate.enabled ){ res = "&page=" + paginate.paging.page; }
+            return res;
+        },
+        blogger: function(id){
+            let res = ""
+            if(typeof paginate !== "undefined" && paginate.enabled ){
+                id = window.btoa(id);
+                let p = paginate.paging.page  - 1 ;                
+                if(p && paginate.paging[id]){
+                    res = (typeof paginate.paging[id][p] !== "undefined") ? "&pageToken=" + paginate.paging[id][p].nextPageToken : "";    
+                }
+            }
+            return  res           
+        }
+    }        
+}
+jQuery(document).ready(function(){  widget_client.init(); })
+//]]></script>

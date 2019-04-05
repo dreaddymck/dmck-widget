@@ -1,0 +1,27 @@
+{
+  "name": "dmck-widget",
+  "version": "1.0.2",
+  "description": "simple script to fascilitate remixing content between platforms",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dreaddymck/dmck-widget.git"
+  },
+  "author": "dreaddymck",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/dreaddymck/dmck-widget/issues"
+  },
+  "homepage": "https://github.com/dreaddymck/dmck-widget#readme",
+  "dependencies": {},
+  "keywords": [
+    "widget",
+    "blogger",
+    "wordpress",
+    "api",
+    "javascript"
+  ]
+}
