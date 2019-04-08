@@ -40,11 +40,6 @@ class widget_engine {
         // hasClasses
         jQuery.fn.extend({hasClasses:function(s){for(var n in s)if(jQuery(this).hasClass(s[n]))return!0;return!1}});            
         if( ! Object.keys(settings.display).includes(window.location.host) ) { return; }
-        if(typeof(pageType) !== 'undefined'){             
-            if( settings.display[window.location.host].includes(pageType) ){ 
-                new Promise(function(resolve, reject) { resolve( settings.client(settings.config) ); });            
-            }
-        }else
         if( jQuery("body").hasClasses( settings.display[window.location.host] ) ){
             new Promise(function(resolve, reject) { resolve( settings.client(settings.config) ); });
         }
