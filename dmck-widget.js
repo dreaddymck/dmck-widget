@@ -1,50 +1,72 @@
 "use strict"
-class widget_engine {
-	constructor() { if (window.jQuery) {        
-        // truncate.js
-        !function(e){var t=/(\s*\S+|\s)jQuery/,n=/^(\S*)/;e.truncate=function(t,n){return e("<div></div>").append(t).truncate(n).html()},e.fn.truncate=function(r){e.isNumeric(r)&&(r={length:r});var i=e.extend({},e.truncate.defaults,r);return this.each(function(){var r=e(this);i.noBreaks&&r.find("br").replaceWith(" ");var s=r.text(),l=s.length-i.length;if(i.stripTags&&r.text(s),i.words&&l>0){var a=s.slice(0,i.length).replace(t,"").length;l=i.keepFirstWord&&0===a?s.length-n.exec(s)[0].length-1:s.length-a-1}l<0||!l&&!i.truncated||e.each(r.contents().get().reverse(),function(t,n){var r=e(n),s=r.text().length;return s<=l?(i.truncated=!0,l-=s,void r.remove()):3===n.nodeType?(i.finishBlock?e(n.splitText(s)).replaceWith(i.ellipsis):e(n.splitText(s-l-1)).replaceWith(i.ellipsis),!1):(r.truncate(e.extend(i,{length:s-l})),!1)})})},e.truncate.defaults={stripTags:!1,words:!1,keepFirstWord:!1,noBreaks:!1,finishBlock:!1,length:1/0,ellipsis:"…"}}(jQuery);
-        this.keys = {blogger:""};
-        this.settings = [];
-    }};    
-    init(){
-        for(let s in this.settings){ 
-            if(jQuery(this.settings[s].config.target).length){
-                this.request(this.settings[s]);
+const dmck_client =  {
+    init: function(arrObj){        
+        let r = new dmck_widget();
+        r.settings = arrObj;
+        // enabled pagination on wordpress front page
+        if(typeof paginate !== "undefined" && ! paginate.enabled && jQuery("body").hasClass("home") ) {            
+            paginate.func = function(){
+                dmck_client.init(arrObj);
+            };
+            paginate.enabled = true;
+            paginate.setup();            
+        }
+        r.init();
+        return;      
+    },
+    hide_title: function(selector){ if( jQuery(selector).length ){ jQuery(selector).hide() } },//hide blogger widget title,
+    label: function(){let e="/search/label/";if(-1!=location.href.indexOf(e))return-1!=location.href.indexOf("?updated-max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?updated-max")):-1!=location.href.indexOf("?&max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?&max")):-1!=location.href.indexOf("?max-results")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?max-results")):location.href.substring(location.href.indexOf(e)+e.length,location.href.length)},
+    query: function(){ let params = new URLSearchParams(window.location.search); if(params.has("q")){return params.get("q");}else if(params.has("s")){return params.get("s");}else{return "";} },
+    page: {
+        set: function(id,value) {
+            if(typeof paginate !== "undefined" && paginate.enabled){
+                id = window.btoa(id)
+                if(!paginate.paging[id]){ paginate.paging[id] = []; }
+                paginate.paging[id][paginate.paging.page] = value;
             }
+        },
+        wordpress: function(){ 
+            let res = "";
+            if(typeof paginate !== "undefined" && paginate.enabled ){ res = "&page=" + paginate.paging.page; }
+            return res;
+        },
+        limitoffset: function(limit){
+            let res = "&limit=" + limit + "&offset=0"; 
+            if(typeof paginate !== "undefined" && paginate.enabled ){ 
+                res = "&limit=" + limit + "&offset=" + (parseInt(paginate.paging.page) - 1) * limit; 
+            }
+            return res;            
+        },
+        blogger: function(id){
+            let res = ""
+            if(typeof paginate !== "undefined" && paginate.enabled ){
+                id = window.btoa(id);
+                let p = paginate.paging.page  - 1 ;                
+                if(p && paginate.paging[id]){
+                    res = (typeof paginate.paging[id][p] !== "undefined") ? "&pageToken=" + paginate.paging[id][p].nextPageToken : "";    
+                }
+            }
+            return  res           
         }
-    };
-    query(){ let params = new URLSearchParams(window.location.search); if(params.has('q')){return params.get('q');}else if(params.has('s')){return params.get('s');}else{return "";} };
-    label(){let e="/search/label/";if(-1!=location.href.indexOf(e))return-1!=location.href.indexOf("?updated-max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?updated-max")):-1!=location.href.indexOf("?&max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?&max")):-1!=location.href.indexOf("?max-results")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?max-results")):location.href.substring(location.href.indexOf(e)+e.length,location.href.length)};       
-    hide_title(selector){ if( jQuery(selector).length ){ jQuery(selector).hide() } }//hide blogger widget title, 
-    client(config){
-        let url = config.url; 
-        if(config.url.match(/wp-json\/wp\/v2\/posts\?per_page=1/)){
-            url = url + widget_client.page.wordpress();
-        }else
-        if(config.url.match(/www.googleapis.com\/blogger\/v3/)){
-            url = url + widget_client.page.blogger(config.header.title);
-        }else
-        if(config.url.match(/www.googleapis.com\/youtube\/v3/)){
-            url = url + widget_client.page.blogger(config.header.title);
+    },
+    tiny_rss: function(data,config){        
+        let render = function(entry){
+            jQuery('<h2>').append(
+                jQuery('<a>',{ text: entry.title, title: entry.title, href: entry.link["@attributes"].href})
+            ).appendTo(config.target);
+            jQuery(entry.content).appendTo(config.target);
         }
-        jQuery(config.target).html("").hide();
-        if(config.search && !config.search.q){return}
-        jQuery.ajax({ type: "GET", url:url, data: config.search })
-        .done(function (data) { config.render(data,config); })
-        .fail(function (xhr, textStatus, errorThrown) {
-            console.log(xhr.responseText);
-            console.log(textStatus);
-        }); 
-    }
-    request(settings){
-        // hasClasses
-        jQuery.fn.extend({hasClasses:function(s){for(var n in s)if(jQuery(this).hasClass(s[n]))return!0;return!1}});            
-        if( ! Object.keys(settings.display).includes(window.location.host) ) { return; }
-        if( jQuery("body").hasClasses( settings.display[window.location.host] ) ){
-            new Promise(function(resolve, reject) { resolve( settings.client(settings.config) ); });
+        data = JSON.parse(data);
+        if( data.entry instanceof Array ){
+            for(var d in data.entry){ render(data.entry[d]); }
+        } 
+        else { render(data.entry); }
+        if(typeof config.callback === "function"){
+            config.callback();
         }
-    };    
-    wp_render(data,config){
+        jQuery(config.target).show();
+    },       
+    wp_render: function(data,config){
         let truncate_func=function(t){return"undefined"!==jQuery.truncate&&(t.str=jQuery.truncate(t.str,{length:t.length?t.length:150,finishBlock:!0,ellipsis:t.url?" <a href='"+t.url+"' target='_blank' title='more'>[...]</a>":""})),t.str};    
         let title = "";
         let href = "";
@@ -87,19 +109,15 @@ class widget_engine {
             jQuery('<p>').html(data.content.rendered).appendTo(config.target);
         }
         if( data instanceof Array ){
-            for(var d in data){
-                render(data[d]);
-            }
-        } else {
-            render(data);
-        }       
+            for(var d in data){ render(data[d]); }
+        } else { render(data); }    
                     
         jQuery(config.target).show();
-    }
-    blogger_render = function(data, config){
+    },
+    blogger_render:function(data, config){
         let truncate_func=function(t){return"undefined"!==jQuery.truncate&&(t.str=jQuery.truncate(t.str,{length:t.length?t.length:150,finishBlock:!0,ellipsis:t.url?" <a href='"+t.url+"' target='_blank' title='more'>[...]</a>":""})),t.str};    
         // setting up nextpage token for googleapi
-        widget_client.page.set( config.header.title, { nextPageToken: data.nextPageToken } );       
+        dmck_client.page.set( config.header.title, { nextPageToken: data.nextPageToken } );       
         for(var d in data.items){
             jQuery('<h2>').append(
                 jQuery('<a>',{ text: config.header.title, title: config.header.title, href: config.header.url, click: function(){return;}, target:""})
@@ -113,9 +131,9 @@ class widget_engine {
             jQuery(config.target).find("iframe").detach()
         }                    
         jQuery(config.target).show();
-    }
-    youtube_playlist = function(data, config){
-        widget_client.page.set( config.header.title, { nextPageToken: data.nextPageToken } );       
+    },
+    youtube_playlist: function(data, config){
+        dmck_client.page.set( config.header.title, { nextPageToken: data.nextPageToken } );       
         jQuery('<h2>').append(
             jQuery('<a>',{ text: config.header.title, title: config.header.title, href: config.header.url, click: function(){return;}, target:""})
         ).appendTo(config.target);
@@ -123,11 +141,10 @@ class widget_engine {
         for(var d in data.items){
             src = "https://www.youtube.com/embed/?listType=playlist&list=" + data.items[d].id.playlistId
             jQuery("<iframe>").attr({"src": src, "width": "100%", "height": "auto", "frameborder": "0", "allowfullscreen": "true" }).appendTo(config.target);
-        }
-                            
+        }                            
         jQuery(config.target).show();
-    }    
-    reddit_render(data, config){
+    },    
+    reddit_render: function(data, config){
         if (data.data.children.length > 0) {
             let t = "";
             let truncate_func=function(t){return"undefined"!==jQuery.truncate&&(t.str=jQuery.truncate(t.str,{length:t.length?t.length:150,finishBlock:!0,ellipsis:t.url?" <a href='"+t.url+"' target='_blank' title='more'>[...]</a>":""})),t.str};    
@@ -154,5 +171,57 @@ class widget_engine {
         } else {
             console.log("No subreddits match the search query!");
         }
-    }       
+    }                
 }
+
+
+class dmck_widget {
+	constructor() { if (window.jQuery) {        
+        // truncate.js
+        !function(e){var t=/(\s*\S+|\s)jQuery/,n=/^(\S*)/;e.truncate=function(t,n){return e("<div></div>").append(t).truncate(n).html()},e.fn.truncate=function(r){e.isNumeric(r)&&(r={length:r});var i=e.extend({},e.truncate.defaults,r);return this.each(function(){var r=e(this);i.noBreaks&&r.find("br").replaceWith(" ");var s=r.text(),l=s.length-i.length;if(i.stripTags&&r.text(s),i.words&&l>0){var a=s.slice(0,i.length).replace(t,"").length;l=i.keepFirstWord&&0===a?s.length-n.exec(s)[0].length-1:s.length-a-1}l<0||!l&&!i.truncated||e.each(r.contents().get().reverse(),function(t,n){var r=e(n),s=r.text().length;return s<=l?(i.truncated=!0,l-=s,void r.remove()):3===n.nodeType?(i.finishBlock?e(n.splitText(s)).replaceWith(i.ellipsis):e(n.splitText(s-l-1)).replaceWith(i.ellipsis),!1):(r.truncate(e.extend(i,{length:s-l})),!1)})})},e.truncate.defaults={stripTags:!1,words:!1,keepFirstWord:!1,noBreaks:!1,finishBlock:!1,length:1/0,ellipsis:"…"}}(jQuery);
+        this.settings = [];
+    }};    
+    init(){
+        for(let s in this.settings){ 
+            if(jQuery(this.settings[s].config.target).length){
+                this.before_request(this.settings[s]);
+            }
+        }
+    };
+    before_request(settings){
+        // hasClasses
+        jQuery.fn.extend({hasClasses:function(s){for(var n in s)if(jQuery(this).hasClass(s[n]))return!0;return!1}});            
+        if( ! Object.keys(settings.display).includes(window.location.host) ) { return; }
+
+        let request = function(config){
+            let url = config.url; 
+            if(config.url.match(/wp-json\/wp\/v2\/posts\?per_page=1/)){
+                url = url + dmck_client.page.wordpress();
+            }else
+            if(config.url.match(/www.googleapis.com\/blogger\/v3/)){
+                url = url + dmck_client.page.blogger(config.header.title);
+            }else
+            if(config.url.match(/www.googleapis.com\/youtube\/v3/)){
+                url = url + dmck_client.page.blogger(config.header.title);
+            }
+            jQuery(config.target).html("").hide();
+            if(config.data && !config.data.q && !config.data.route){return}
+            jQuery.ajax({ 
+                type: config.type?config.type:"GET", 
+                url:url,
+                dataType:config.dataType?config.dataType:"", 
+                data:config.data?config.data:"",
+            })
+            .done(function (data) { dmck_client[config.render](data,config); })
+            .fail(function (xhr, textStatus, errorThrown) {
+                console.log(xhr.responseText);
+                console.log(textStatus);
+            }); 
+        }
+        if( jQuery("body").hasClasses( settings.display[window.location.host] ) ){
+            new Promise(function(resolve, reject) { resolve( request(settings.config) ); });
+        }
+    }; 
+
+}       
+
