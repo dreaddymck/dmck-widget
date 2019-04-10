@@ -195,6 +195,8 @@ class dmck_widget {
 
         let request = function(config){
             let url = config.url; 
+            let reg = new RegExp( /&limit\=\d&offset\=\d/, 'g' ) //a hack to fix tiny rss pagination routine
+            
             if(config.url.match(/wp-json\/wp\/v2\/posts\?per_page=1/)){
                 url = url + dmck_client.page.wordpress();
             }else
@@ -203,6 +205,10 @@ class dmck_widget {
             }else
             if(config.url.match(/www.googleapis.com\/youtube\/v3/)){
                 url = url + dmck_client.page.blogger(config.header.title);
+            }else
+            if( config.data && config.data.route && config.data.route.match(/public.php\?op\=rss/) && config.data.route.match(reg) ){
+                let lo  = dmck_client.page.limitoffset(1);
+                config.data.route = config.data.route.replace(reg, lo);
             }
             jQuery(config.target).html("").hide();
             if(config.data && !config.data.q && !config.data.route){return}
