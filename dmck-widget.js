@@ -16,7 +16,34 @@ const dmck_client =  {
     },
     hide_title: function(selector){ if( jQuery(selector).length ){ jQuery(selector).hide() } },//hide blogger widget title,
     label: function(){let e="/search/label/";if(-1!=location.href.indexOf(e))return-1!=location.href.indexOf("?updated-max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?updated-max")):-1!=location.href.indexOf("?&max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?&max")):-1!=location.href.indexOf("?max-results")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?max-results")):location.href.substring(location.href.indexOf(e)+e.length,location.href.length)},
-    query: function(){ let params = new URLSearchParams(window.location.search); if(params.has("q")){return params.get("q");}else if(params.has("s")){return params.get("s");}else{return "";} },
+    query: function(){ 
+        let params = new URLSearchParams(window.location.search); 
+        if(params.has("q")){
+            return params.get("q");
+        }
+        else 
+        if(params.has("s")){
+            return params.get("s");
+        }
+        else 
+        if(typeof socache !== "undefined" ){
+            
+            if( typeof socache.tags === "string" ){
+                let tags = socache.tags.replace("|", " OR "); 
+                return tags;                
+            } 
+            else
+            if( typeof socache.category === "string" ){
+                let category = socache.category.replace("|", " OR "); 
+                return category;                
+            }            
+
+        }
+        else
+        {
+            return "";
+        } 
+    },
     page: {
         set: function(id,value) {
             if(typeof paginate !== "undefined" && paginate.enabled){
