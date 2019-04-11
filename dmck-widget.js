@@ -194,13 +194,18 @@ const dmck_client =  {
                 jQuery('<h3>').append(
                     jQuery('<a>',{ text: res.data.title, title: res.data.title, href: res.data.url, click: function(){return;}, target:""})
                 ).appendTo(config.target);
-                //subreddit_name_prefixed
 
+                if( dmck_client.is_image( res.data.url ) ){
+                    jQuery("<img>").attr({"src":res.data.url,"width":"auto","height":"auto"}).appendTo(config.target);
+                }
+                
                 if(res.data.media_embed.content){
                     media_render(res);
                 }
                 t = jQuery("<p>").html( res.data.selftext_html )[0].innerText;
+
                 if(config.truncate){ t = truncate_func({str: t , url: res.data.url, length:config.truncate}) }
+
                 jQuery(config.target).append( t ) ;                            
             });
             if(typeof config.callback === "function"){ config.callback(); }
@@ -209,7 +214,16 @@ const dmck_client =  {
         } else {
             console.log("No subreddits match the search query!");
         }
-    }                
+    },
+    is_url: function(str){
+      let regexp =  /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+            if (regexp.test(str)) { return true; }
+           return false;
+    },
+    is_image: function(url) {
+        return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+    }
+                          
 }
 
 
