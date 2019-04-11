@@ -61,6 +61,7 @@ const dmck_client =  {
             for(var d in data.entry){ render(data.entry[d]); }
         } else { render(data.entry); }
         if(typeof config.callback === "function"){ config.callback(); }
+        jQuery("<br>").addClass("clear").appendTo(config.target);
         jQuery(config.target).show();
     },       
     wp_render: function(data,config){
@@ -108,7 +109,8 @@ const dmck_client =  {
         if( data instanceof Array ){
             for(var d in data){ render(data[d]); }
         } else { render(data); }    
-        if(typeof config.callback === "function"){ config.callback(); }            
+        if(typeof config.callback === "function"){ config.callback(); }  
+        jQuery("<br>").addClass("clear").appendTo(config.target);          
         jQuery(config.target).show();
     },
     blogger_render:function(data, config){
@@ -127,7 +129,8 @@ const dmck_client =  {
             jQuery(config.target).find("img").attr({ height: 'auto', width: '100%' }).closest("a").attr({href: data.items[d].url})                
             jQuery(config.target).find("iframe").detach()
         }  
-        if(typeof config.callback === "function"){ config.callback(); }                  
+        if(typeof config.callback === "function"){ config.callback(); }
+        jQuery("<br>").addClass("clear").appendTo(config.target);                  
         jQuery(config.target).show();
     },
     youtube_playlist: function(data, config){
@@ -140,7 +143,8 @@ const dmck_client =  {
             src = "https://www.youtube.com/embed/?listType=playlist&list=" + data.items[d].id.playlistId
             jQuery("<iframe>").attr({"src": src, "width": "100%", "height": "auto", "frameborder": "0", "allowfullscreen": "true" }).appendTo(config.target);
         }   
-        if(typeof config.callback === "function"){ config.callback(); }                         
+        if(typeof config.callback === "function"){ config.callback(); } 
+        jQuery("<br>").addClass("clear").appendTo(config.target);                        
         jQuery(config.target).show();
     },    
     reddit_render: function(data, config){
@@ -167,6 +171,7 @@ const dmck_client =  {
                 jQuery(config.target).append( t ) ;                            
             });
             if(typeof config.callback === "function"){ config.callback(); }
+            jQuery("<br>").addClass("clear").appendTo(config.target);
             jQuery(config.target).show();
         } else {
             console.log("No subreddits match the search query!");
