@@ -99,7 +99,7 @@ const dmck_client =  {
             }
             attachments(data);
             title = jQuery("<span>").html( data.title.rendered )[0].innerText;
-            jQuery('<p>').html(
+            jQuery('<h3>').html(
                 jQuery('<a>',{ text: title, title: title, href: data.link, click: function(){return;}, target:""})
             ).appendTo(config.target);
             if(config.truncate){ data.content.rendered = truncate_func({str: data.content.rendered , url: data.link, length:config.truncate}) }    
@@ -119,7 +119,7 @@ const dmck_client =  {
             jQuery('<h2>').append(
                 jQuery('<a>',{ text: config.header.title, title: config.header.title, href: config.header.url, click: function(){return;}, target:""})
             ).appendTo(config.target);
-            jQuery('<p>').append(
+            jQuery('<h3>').append(
                 jQuery('<a>',{ text: data.items[d].title, title: data.items[d].title, href: data.items[d].url, click: function(){return;}, target:""})
             ).appendTo(config.target);
             if(config.truncate){ data.items[d].content = truncate_func({str: data.items[d].content , url: data.items[d].url, length:config.truncate}) }
@@ -156,7 +156,7 @@ const dmck_client =  {
                 jQuery('<h2>').append(
                     jQuery('<a>',{ text: config.header.title, title: config.header.title, href: config.header.url, click: function(){return;}, target:""})
                 ).appendTo(config.target);
-                jQuery('<p>').append(
+                jQuery('<h3>').append(
                     jQuery('<a>',{ text: res.data.title, title: res.data.title, href: res.data.url, click: function(){return;}, target:""})
                 ).appendTo(config.target);
                 if(res.data.media_embed.content){
