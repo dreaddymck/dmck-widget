@@ -26,8 +26,7 @@ const dmck_client =  {
             return params.get("s");
         }
         else 
-        if(typeof socache !== "undefined" ){
-            
+        if(typeof socache !== "undefined" ){            
             if( typeof socache.tags === "string" ){
                 let tags = socache.tags.replace("|", " OR "); 
                 return tags;                
@@ -36,8 +35,7 @@ const dmck_client =  {
             if( typeof socache.category === "string" ){
                 let category = socache.category.replace("|", " OR "); 
                 return category;                
-            }            
-
+            } 
         }
         else
         {
@@ -184,12 +182,20 @@ const dmck_client =  {
                 jQuery(config.target).find('iframe').attr({ height:'auto',width:'100%'});
             }             
             jQuery.each(data.data.children, function(idx, res) {
+                let title = config.header.title;
+                let url = config.header.url;
+                if(res.data.subreddit_name_prefixed){ 
+                    title = res.data.subreddit_name_prefixed;
+                    url = config.header.url + "/" +  res.data.subreddit_name_prefixed;
+                }                
                 jQuery('<h2>').append(
-                    jQuery('<a>',{ text: config.header.title, title: config.header.title, href: config.header.url, click: function(){return;}, target:""})
+                    jQuery('<a>',{ text: title, title: title, href:url, click: function(){return;}, target:""})
                 ).appendTo(config.target);
                 jQuery('<h3>').append(
                     jQuery('<a>',{ text: res.data.title, title: res.data.title, href: res.data.url, click: function(){return;}, target:""})
                 ).appendTo(config.target);
+                //subreddit_name_prefixed
+
                 if(res.data.media_embed.content){
                     media_render(res);
                 }
