@@ -44,15 +44,30 @@ const dmck_client =  {
     },
     page: {
         set: function(id,value) {
+            id = window.btoa(id)
+            // we will use global objects - if available - to host paging information
+            // paginate is used on the front page to scroll through gallery
             if(typeof paginate !== "undefined" && paginate.enabled){
-                id = window.btoa(id)
                 if(!paginate.paging[id]){ paginate.paging[id] = []; }
                 paginate.paging[id][paginate.paging.page] = value;
+            }
+            else // socache is a custom wordpress plugin that renders a global object with page numbers
+            if(typeof socache !== "undefined" && socache.page){
+                if(typeof Cookies.get("paging") !== "undefined"){ 
+                    socache.paging = JSON.parse(Cookies.get("paging"));
+                }else{
+                    socache.paging = {}; 
+                }
+                if(!socache.paging[id]){ socache.paging[id] = {}; }
+                socache.paging[id][socache.page] = value;
+                Cookies.set("paging", JSON.stringify(socache.paging));
             }
         },
         wordpress: function(){ 
             let res = "";
             if(typeof paginate !== "undefined" && paginate.enabled ){ res = "&page=" + paginate.paging.page; }
+            else
+            if(typeof socache !== "undefined" && socache.page ){ res = "&page=" + socache.page; }
             return res;
         },
         limitoffset: function(limit){
@@ -60,17 +75,29 @@ const dmck_client =  {
             if(typeof paginate !== "undefined" && paginate.enabled ){ 
                 res = "&limit=" + limit + "&offset=" + (parseInt(paginate.paging.page) - 1) * limit; 
             }
+            else
+            if(typeof socache !== "undefined" && socache.page ){ 
+                res = "&limit=" + limit + "&offset=" + (parseInt(socache.page) - 1) * limit; 
+            }            
             return res;            
         },
         blogger: function(id){
-            let res = ""
+            id = window.btoa(id);
+            let res = ""            
             if(typeof paginate !== "undefined" && paginate.enabled ){
-                id = window.btoa(id);
                 let p = paginate.paging.page  - 1 ;                
                 if(p && paginate.paging[id]){
                     res = (typeof paginate.paging[id][p] !== "undefined") ? "&pageToken=" + paginate.paging[id][p].nextPageToken : "";    
                 }
             }
+            else
+            if( typeof Cookies.get("paging") !== "undefined" && socache.page ){
+                socache.paging = JSON.parse(Cookies.get("paging")); 
+                let p = socache.page  - 1 ;                
+                if(p && socache.paging && socache.paging[id]){
+                    res = (typeof socache.paging[id][p] !== "undefined") ? "&pageToken=" + socache.paging[id][p].nextPageToken : "";    
+                }
+            }            
             return  res           
         }
     },
