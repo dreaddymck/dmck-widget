@@ -53,14 +53,16 @@ const dmck_client =  {
             }
             else // socache is a custom wordpress plugin that renders a global object with page numbers
             if(typeof socache !== "undefined" && socache.page){
-                if(typeof Cookies.get("paging") !== "undefined"){ 
-                    socache.paging = JSON.parse(Cookies.get("paging"));
-                }else{
-                    socache.paging = {}; 
+                if(typeof Cookies !== "undefined") {
+                    if(typeof Cookies.get("paging") !== "undefined"){ 
+                        socache.paging = JSON.parse(Cookies.get("paging"));
+                    }else{
+                        socache.paging = {}; 
+                    }
+                    if(!socache.paging[id]){ socache.paging[id] = {}; }
+                    socache.paging[id][socache.page] = value;
+                    Cookies.set("paging", JSON.stringify(socache.paging));                    
                 }
-                if(!socache.paging[id]){ socache.paging[id] = {}; }
-                socache.paging[id][socache.page] = value;
-                Cookies.set("paging", JSON.stringify(socache.paging));
             }
         },
         wordpress: function(){ 
@@ -91,7 +93,7 @@ const dmck_client =  {
                 }
             }
             else
-            if( typeof Cookies.get("paging") !== "undefined" && socache.page ){
+            if( typeof Cookies !== "undefined" && typeof Cookies.get("paging") !== "undefined" && socache.page ){
                 socache.paging = JSON.parse(Cookies.get("paging")); 
                 let p = socache.page  - 1 ;                
                 if(p && socache.paging && socache.paging[id]){
