@@ -14,12 +14,9 @@ const dmck_client =  {
         r.init();
         return;      
     },
-    globals:{},
-    hide_title: function(selector){ if( jQuery(selector).length ){ jQuery(selector).hide() } },//hide blogger widget title,
-    label: function(){let e="/search/label/";if(-1!=location.href.indexOf(e))return-1!=location.href.indexOf("?updated-max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?updated-max")):-1!=location.href.indexOf("?&max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?&max")):-1!=location.href.indexOf("?max-results")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?max-results")):location.href.substring(location.href.indexOf(e)+e.length,location.href.length)},
+    globals:{},    
     query: function(){ 
         let params = new URLSearchParams(window.location.search);
-        let label = dmck_client.label(); 
         if(params.has("q")){
             return params.get("q");
         }
@@ -40,12 +37,18 @@ const dmck_client =  {
             } 
         }
         else 
-        if(typeof dmck_client !== "undefined" && typeof dmck_client.globals !== "undefined" && dmck_client.globals["widget-tags"] !== "defined") {
+        if( 
+            typeof dmck_client !== "undefined" && 
+            typeof dmck_client.globals !== "undefined" && 
+            typeof dmck_client.globals["widget-tags"] !== "defined" &&
+            dmck_client.globals["widget-tags"].length > 0
+        ) 
+        {
             return dmck_client.globals["widget-tags"].join(" OR ")
         } 
         else 
-        if( label ) {
-            return label;
+        if( typeof dmck_client.globals.label !== "undefined" && dmck_client.globals.label) {
+            return dmck_client.globals.label;
         }               
         else
         {
