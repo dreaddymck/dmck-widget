@@ -14,6 +14,7 @@ const dmck_client =  {
         r.init();
         return;      
     },
+    globals:{},
     hide_title: function(selector){ if( jQuery(selector).length ){ jQuery(selector).hide() } },//hide blogger widget title,
     label: function(){let e="/search/label/";if(-1!=location.href.indexOf(e))return-1!=location.href.indexOf("?updated-max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?updated-max")):-1!=location.href.indexOf("?&max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?&max")):-1!=location.href.indexOf("?max-results")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?max-results")):location.href.substring(location.href.indexOf(e)+e.length,location.href.length)},
     query: function(){ 
