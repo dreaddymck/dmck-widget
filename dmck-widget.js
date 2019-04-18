@@ -194,7 +194,8 @@ const dmck_client =  {
             if(config.truncate){ data.items[d].content = truncate_func({str: data.items[d].content , url: data.items[d].url, length:config.truncate}) }
             jQuery(data.items[d].content).appendTo(config.target);
             jQuery(config.target).find("img").attr({ height: 'auto', width: '100%' }).closest("a").attr({href: data.items[d].url})                
-            jQuery(config.target).find("iframe").detach()
+            jQuery(config.target).find("iframe").detach();
+            jQuery(config.target).find("blockquote").detach()
         }  
         if(typeof config.callback === "function"){ config.callback(); }
         jQuery("<br>").addClass("clear").appendTo(config.target);                  
