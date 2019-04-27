@@ -122,13 +122,13 @@ const dmck_client =  {
                 jQuery('<a>',{ text: entry.title, title: entry.title, href: entry.link["@attributes"].href})
             ).appendTo(config.target);
             jQuery(entry.content).appendTo(config.target);
+            jQuery("<br>").addClass("clear").appendTo(config.target);
         }
         data = JSON.parse(data);
         if( data.entry instanceof Array ){
             for(var d in data.entry){ render(data.entry[d]); }
         } else { render(data.entry); }
-        if(typeof config.callback === "function"){ config.callback(); }
-        jQuery("<br>").addClass("clear").appendTo(config.target);
+        if(typeof config.callback === "function"){ config.callback(); }        
         jQuery(config.target).show();
     },       
     wp_render: function(data,config){
@@ -172,12 +172,12 @@ const dmck_client =  {
             ).appendTo(config.target);
             if(config.truncate){ data.content.rendered = truncate_func({str: data.content.rendered , url: data.link, length:config.truncate}) }    
             jQuery('<p>').html(data.content.rendered).appendTo(config.target);
+            jQuery("<br>").addClass("clear").appendTo(config.target); 
         }
         if( data instanceof Array ){
             for(var d in data){ render(data[d]); }
         } else { render(data); }    
-        if(typeof config.callback === "function"){ config.callback(); }  
-        jQuery("<br>").addClass("clear").appendTo(config.target);          
+        if(typeof config.callback === "function"){ config.callback(); }                 
         jQuery(config.target).show();
     },
     blogger_render:function(data, config){
@@ -196,9 +196,9 @@ const dmck_client =  {
             jQuery(config.target).find("img").attr({ height: 'auto', width: '100%' }).closest("a").attr({href: data.items[d].url})                
             jQuery(config.target).find("iframe").detach();
             jQuery(config.target).find("blockquote").detach()
+            jQuery("<br>").addClass("clear").appendTo(config.target);
         }  
-        if(typeof config.callback === "function"){ config.callback(); }
-        jQuery("<br>").addClass("clear").appendTo(config.target);                  
+        if(typeof config.callback === "function"){ config.callback(); }                          
         jQuery(config.target).show();
     },
     youtube_playlist: function(data, config){
@@ -210,9 +210,9 @@ const dmck_client =  {
         for(var d in data.items){
             src = "https://www.youtube.com/embed/?listType=playlist&list=" + data.items[d].id.playlistId
             jQuery("<iframe>").attr({"src": src, "width": "100%", "height": "auto", "frameborder": "0", "allowfullscreen": "true" }).appendTo(config.target);
+            jQuery("<br>").addClass("clear").appendTo(config.target);
         }   
-        if(typeof config.callback === "function"){ config.callback(); } 
-        jQuery("<br>").addClass("clear").appendTo(config.target);                        
+        if(typeof config.callback === "function"){ config.callback(); }                                
         jQuery(config.target).show();
     },    
     reddit_render: function(data, config){
@@ -249,10 +249,10 @@ const dmck_client =  {
 
                 if(config.truncate){ t = truncate_func({str: t , url: res.data.url, length:config.truncate}) }
 
-                jQuery(config.target).append( t ) ;                            
+                jQuery(config.target).append( t ) ;  
+                jQuery("<br>").addClass("clear").appendTo(config.target);                          
             });
-            if(typeof config.callback === "function"){ config.callback(); }
-            jQuery("<br>").addClass("clear").appendTo(config.target);
+            if(typeof config.callback === "function"){ config.callback(); }            
             jQuery(config.target).show();
         } else {
             console.log("No subreddits match the search query!");
