@@ -37,8 +37,7 @@ const dmck_client =  {
             } 
         }
         else 
-        if( 
-            typeof dmck_client !== "undefined" && 
+        if( typeof dmck_client !== "undefined" && 
             typeof dmck_client.globals !== "undefined" && 
             typeof dmck_client.globals["widget-tags"] !== "defined" &&
             dmck_client.globals["widget-tags"].length > 0
