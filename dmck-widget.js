@@ -27,12 +27,12 @@ const dmck_client =  {
         else 
         if(typeof socache !== "undefined" ){            
             if( typeof socache.tags === "string" ){
-                let tags = socache.tags.replace("|", " OR "); 
+                let tags = socache.tags.replace(/\|/g, " OR "); 
                 return tags;                
             } 
             else
             if( typeof socache.category === "string" ){
-                let category = socache.category.replace("|", " OR "); 
+                let category = socache.category.replace(/\|/g, " OR "); 
                 return category;                
             } 
         }
@@ -48,7 +48,7 @@ const dmck_client =  {
         } 
         else 
         if( typeof dmck_client.globals.label !== "undefined" && dmck_client.globals.label) {
-            return dmck_client.globals.label;
+            return dmck_client.globals.label.replace(/\|/g, " OR ");
         }               
         else
         {
