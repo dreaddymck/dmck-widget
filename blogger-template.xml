@@ -18,11 +18,7 @@
 		</b:if>
 	</title>
 
-	<!-- Description and Keywords -->
-	<b:if cond='data:blog.pageType == &quot;index&quot;'>
-		<meta content='YOUR DESCRIPTION HERE' name='description'/>
-	</b:if>
-	<meta content='YOUR KEYWORDS HERE' name='keywords'/> 
+ 
 
 	<b:if cond='data:blog.pageType == &quot;item&quot;'>
 		<meta expr:content='data:blog.pageName' property='og:title'/>
@@ -4275,7 +4271,7 @@ var _0xbbea=["\x73\x72\x63","\x2F\x73\x33\x35\x2D\x63\x2F","\x2F\x73\x38\x30\x2D
   <b:widget-settings>
     <b:widget-setting name='displayUrl'/>
     <b:widget-setting name='displayHeight'>0</b:widget-setting>
-    <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
+    <b:widget-setting name='sectionWidth'>477</b:widget-setting>
     <b:widget-setting name='useImage'>false</b:widget-setting>
     <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
     <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -4451,11 +4447,16 @@ var _0xbbea=["\x73\x72\x63","\x2F\x73\x33\x35\x2D\x63\x2F","\x2F\x73\x38\x30\x2D
 
 						</b:if>
 					   
+						<b:if cond='data:blog.homepageUrl != &quot;https://iandimeme.blogspot.com/&quot;'> 
+						<li id='iandimeme-blogspot-com'>
+							<a href='https://iandimeme.blogspot.com'>I and I meme</a>
+						</li>
+						</b:if>
+
 					</ul>
 				</div><!-- /.nav-menu -->
 			</div><!-- /.nav-wrapper -->
 			<!-- End Main Nav -->
-
 
 		</header>
 		<!-- END HEADER -->
@@ -5906,29 +5907,6 @@ a.btn {
   </div>
 </b:includable>
 </b:widget>
-<b:widget cond='data:view.isHomepage' id='AdSense1' locked='false' title='' type='AdSense' version='1'>
-  <b:widget-settings>
-    <b:widget-setting name='style.bgcolor'>#000000</b:widget-setting>
-    <b:widget-setting name='style.textcolor'>#4737be</b:widget-setting>
-    <b:widget-setting name='style.layout'>1x1</b:widget-setting>
-    <b:widget-setting name='style.bordercolor'>#000000</b:widget-setting>
-    <b:widget-setting name='style.urlcolor'>#fefefe</b:widget-setting>
-    <b:widget-setting name='style.linkcolor'>#ffffff</b:widget-setting>
-    <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
-  </b:widget-settings>
-  <b:includable id='main'>
-  <div class='widget-content'>
-	<data:adCode/>
-	<b:include name='quickedit'/>
-  </div>
-</b:includable>
-  <b:includable id='defaultAdUnit'>
-		  <!-- Clear out style (need non-empty string) -->
-		  <b:with value='&quot;/* Done in css. */&quot;' var='style'>
-			<b:include name='super.defaultAdUnit'/>
-		  </b:with>
-		</b:includable>
-</b:widget>
 </b:section>
 							<!-- End Post archive -->             
 						</div><!-- /.content -->
@@ -5996,29 +5974,6 @@ a.btn {
 		  <b:include name='quickedit'/>
 		</div>
 	  </b:includable>
-</b:widget>
-<b:widget id='AdSense2' locked='false' title='' type='AdSense' version='1'>
-  <b:widget-settings>
-    <b:widget-setting name='style.bgcolor'>#000000</b:widget-setting>
-    <b:widget-setting name='style.textcolor'>#a93e33</b:widget-setting>
-    <b:widget-setting name='style.layout'>1x1</b:widget-setting>
-    <b:widget-setting name='style.bordercolor'>#000000</b:widget-setting>
-    <b:widget-setting name='style.urlcolor'>#f4d6d3</b:widget-setting>
-    <b:widget-setting name='style.linkcolor'>#fdfaf0</b:widget-setting>
-    <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
-  </b:widget-settings>
-  <b:includable id='main'>
-  <div class='widget-content'>
-	<data:adCode/>
-	<b:include name='quickedit'/>
-  </div>
-</b:includable>
-  <b:includable id='defaultAdUnit'>
-		  <!-- Clear out style (need non-empty string) -->
-		  <b:with value='&quot;/* Done in css. */&quot;' var='style'>
-			<b:include name='super.defaultAdUnit'/>
-		  </b:with>
-		</b:includable>
 </b:widget>
 </b:section>
 						</div><!-- /.sidebar -->
