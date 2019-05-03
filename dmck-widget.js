@@ -1,6 +1,7 @@
 "use strict"
 const dmck_client =  {
-    init: function(arrObj){        
+    init: function(arrObj){ 
+        console.log("debug")       
         let r = new dmck_widget();
         r.settings = arrObj;
         // enabled pagination on wordpress front page
@@ -25,55 +26,42 @@ const dmck_client =  {
             return params.get("s");
         }
         else 
-        if(typeof socache !== "undefined" ){            
-            if( typeof socache.tags === "string" ){
-                let tags = socache.tags.replace(/\|/g, " OR "); 
-                return tags;                
+        if(typeof dmck_client !== "undefined" ){            
+            if( typeof dmck_client.globals.tags === "string" ){
+                return dmck_client.globals.tags;                
             } 
             else
-            if( typeof socache.category === "string" ){
-                let category = socache.category.replace(/\|/g, " OR "); 
-                return category;                
+            if( typeof dmck_client.globals.category === "string" ){
+                return dmck_client.globals.category;                
             } 
+            else 
+            if( typeof dmck_client.globals.label === "string" ) {
+                return dmck_client.globals.label.replace(/\|/g, " OR ");
+            }           
         }
-        else 
-        if( typeof dmck_client !== "undefined" && 
-            typeof dmck_client.globals !== "undefined" && 
-            typeof dmck_client.globals["widget-tags"] !== "defined" &&
-            dmck_client.globals["widget-tags"].length > 0
-        ) 
-        {
-            return dmck_client.globals["widget-tags"].join(" OR ")
-        } 
-        else 
-        if( typeof dmck_client.globals.label !== "undefined" && dmck_client.globals.label) {
-            return dmck_client.globals.label.replace(/\|/g, " OR ");
-        }               
-        else
-        {
-            return "";
-        } 
+        return "";
     },
     page: {
         set: function(id,value) {
             id = window.btoa(id)
+            let paging = {};
             // we will use global objects - if available - to host paging information
             // paginate is used on the front page to scroll through gallery
             if(typeof paginate !== "undefined" && paginate.enabled){
                 if(!paginate.paging[id]){ paginate.paging[id] = []; }
                 paginate.paging[id][paginate.paging.page] = value;
             }
-            else // socache is a custom wordpress plugin that renders a global object with page numbers
-            if(typeof socache !== "undefined" && socache.page){
+            else 
+            if( dmck_client.globals.page ){
                 if(typeof Cookies !== "undefined") {
                     if(typeof Cookies.get("paging") !== "undefined"){ 
-                        socache.paging = JSON.parse(Cookies.get("paging"));
+                        paging = JSON.parse(Cookies.get("paging"));
                     }else{
-                        socache.paging = {}; 
+                        paging = {}; 
                     }
-                    if(!socache.paging[id]){ socache.paging[id] = {}; }
-                    socache.paging[id][socache.page] = value;
-                    Cookies.set("paging", JSON.stringify(socache.paging));                    
+                    if(!paging[id]){ paging[id] = {}; }
+                    paging[id][dmck_client.globals.page] = value;
+                    Cookies.set("paging", JSON.stringify(paging));                    
                 }
             }
         },
@@ -81,7 +69,7 @@ const dmck_client =  {
             let res = "";
             if(typeof paginate !== "undefined" && paginate.enabled ){ res = "&page=" + paginate.paging.page; }
             else
-            if(typeof socache !== "undefined" && socache.page ){ res = "&page=" + socache.page; }
+            if( dmck_client.globals.page ){ res = "&page=" + dmck_client.globals.page; }
             return res;
         },
         limitoffset: function(limit){
@@ -90,14 +78,15 @@ const dmck_client =  {
                 res = "&limit=" + limit + "&offset=" + (parseInt(paginate.paging.page) - 1) * limit; 
             }
             else
-            if(typeof socache !== "undefined" && socache.page ){ 
-                res = "&limit=" + limit + "&offset=" + (parseInt(socache.page) - 1) * limit; 
+            if(dmck_client.globals.page ){ 
+                res = "&limit=" + limit + "&offset=" + (parseInt(dmck_client.globals.page) - 1) * limit; 
             }            
             return res;            
         },
         blogger: function(id){
             id = window.btoa(id);
-            let res = ""            
+            let paging = {};
+            let res = "";                        
             if(typeof paginate !== "undefined" && paginate.enabled ){
                 let p = paginate.paging.page  - 1 ;                
                 if(p && paginate.paging[id]){
@@ -105,11 +94,13 @@ const dmck_client =  {
                 }
             }
             else
-            if( typeof Cookies !== "undefined" && typeof Cookies.get("paging") !== "undefined" && socache.page ){
-                socache.paging = JSON.parse(Cookies.get("paging")); 
-                let p = socache.page  - 1 ;                
-                if(p && socache.paging && socache.paging[id]){
-                    res = (typeof socache.paging[id][p] !== "undefined") ? "&pageToken=" + socache.paging[id][p].nextPageToken : "";    
+            if( typeof Cookies !== "undefined" && typeof Cookies.get("paging") !== "undefined" ){                
+                if( dmck_client.globals.page ){                    
+                    paging = JSON.parse(Cookies.get("paging")); 
+                    let p = dmck_client.globals.page  - 1 ;                
+                    if(p && paging && paging[id]){
+                        res = (typeof paging[id][p] !== "undefined") ? "&pageToken=" + paging[id][p].nextPageToken : "";    
+                    }
                 }
             }            
             return  res           
@@ -264,8 +255,16 @@ const dmck_client =  {
     },
     is_image: function(url) {
         return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
-    }
-                          
+    },
+    is_mobile: function(){
+        let isMobile = false; //initiate as false
+        // device detection
+        if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent) 
+            || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(navigator.userAgent.substr(0,4))) { 
+            isMobile = true;
+        }
+        return isMobile;        
+    }                          
 }
 
 
@@ -318,7 +317,15 @@ class dmck_widget {
                 console.log(textStatus);
             }); 
         }
-        if( jQuery("body").hasClasses( settings.display[window.location.host] ) ){
+        let show = function(){  
+            if( typeof settings.display === "object"){ return jQuery("body").hasClasses( settings.display[window.location.host] ); }
+            return true;
+        }
+        let hide = function(){ 
+            if( typeof settings.hide === "object"){ return !jQuery("body").hasClasses( settings.hide[window.location.host] ); }
+            return true;            
+        }
+        if( show() && hide() ){
             new Promise(function(resolve, reject) { resolve( request(settings.config) ); });
         }
     }; 
