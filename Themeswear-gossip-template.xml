@@ -1598,27 +1598,27 @@ color:#fff;
 /*****************************************
 HomePage Post CSS
 ******************************************/
-.post-archive ul {
+.post-archive > ul {
 	padding: 0;
 	margin: 0;
 	list-style: none;
 	font-size: 0;
 }
-.post-archive ul li {
+.post-archive > ul li {
 	font-size: 14px;
 	margin-bottom: 30px;
 }
 .post-archive.list-style ul li .post-item {
 	padding: 30px;
 }
-.post-archive ul li .post-item {
+.post-archive > ul li .post-item {
 	background-color: #fff;
 	position: relative;
 	display: block;
 	color: #999;
 }
-.post-archive ul li .post-item:after,
-.post-archive ul li .post-item:before {
+.post-archive > ul li .post-item:after,
+.post-archive > ul li .post-item:before {
 	display: table;
 	content: " ";
 }
@@ -1633,11 +1633,11 @@ HomePage Post CSS
 	z-index: 2;
 	overflow: hidden;
 }
-.post-archive ul li .post-item .featured-img {
+.post-archive > ul li .post-item .featured-img {
 	display: none;
 	background-color: #cecece;
 }
-.post-archive ul li .post-item .featured-img img {
+.post-archive > ul li .post-item .featured-img img {
 	position: absolute;
 	margin: auto;
 	top: -9999px;
@@ -1650,10 +1650,10 @@ HomePage Post CSS
 	height: 210px;
 	object-fit: cover;
 }
-.post-archive ul li .post-item .caption .category {
+.post-archive > ul li .post-item .caption .category {
 	margin: 0 0 5px;
 }
-.post-archive ul li .post-item .caption p {
+.post-archive > ul li .post-item .caption p {
 	margin-bottom: 15px;
 }
 .category {
@@ -1672,39 +1672,39 @@ HomePage Post CSS
 .widget-tabs .nav-tabs>li {
 	text-transform: uppercase;
 }
-.post-archive ul li .post-item .caption .category a,
-.post-archive ul li .post-item .caption .post-meta span {
+.post-archive > ul li .post-item .caption .category a,
+.post-archive > ul li .post-item .caption .post-meta span {
 	margin-right: 10px;
 }
-.post-archive ul li .post-item .caption .post-meta span i {
+.post-archive > ul li .post-item .caption .post-meta span i {
 	margin-right: 3px;
 }
-.post-archive ul li .post-item .caption .post-title {
+.post-archive > ul li .post-item .caption .post-title {
 	color: #50514f;
 	font-size: 24px;
 	line-height: 1.2;
 	margin-bottom: 10px;
 }
-.post-archive ul li .post-item .caption .post-title a {
+.post-archive > ul li .post-item .caption .post-title a {
 	color: #50514f;
 }
 .category a {
 	margin: 0!important;
 	color: #777;
 }
-.post-archive ul li .post-item .caption .post-meta {
+.post-archive > ul li .post-item .caption .post-meta {
 	font-size: 14px;
 	margin-bottom: 15px;
 }
-.post-archive ul li .post-item .caption p {
+.post-archive > ul li .post-item .caption p {
 	margin-bottom: 15px;
 }
 .post-meta,
 .post-meta a {
 	color: #cecece;
 }
-.post-archive ul li .post-item .caption .category a,
-.post-archive ul>li .post-item .caption .post-meta span {
+.post-archive > ul li .post-item .caption .category a,
+.post-archive > ul>li .post-item .caption .post-meta span {
 	margin-right: 10px;
 }
 .post-meta span.author {
@@ -2990,7 +2990,7 @@ display:none;
 	z-index: 2;
 	overflow: hidden;
 }
-.post-archive ul li .post-item .caption .post-title {
+.post-archive > ul li .post-item .caption .post-title {
 	font-size: 21px;
 }
 .category , .post-meta{display:none;}

@@ -5,6 +5,7 @@ const blog_paginate = {
 	init: function(config) {
 		blog_paginate.config = config,
 		blog_paginate.home = location.href;
+		if (blog_paginate.show) { blog_paginate.style.paginate(); } else { blog_paginate.style.default(); }
 		let lblname1 = "";
 		let promise = function(url, cb) {
 			return new Promise((resolve,reject)=>{
@@ -136,16 +137,36 @@ const blog_paginate = {
 		}
 		return true
 	},
-}
-
-jQuery('head').append(`
+	style: {
+		paginate: function(){
+			jQuery('head').append(`
 /*****************************************
 Page navigation
 ******************************************/
 <style type="text/css">
 #blog-pager{display:block;-webkit-border-radius:0;-moz-border-radius:0;-o-border-radius:0;border-radius:0;padding:0;margin:0 0 30px;list-style:none;font-size:0;text-align:center}.showpage.up_page a{float:left}.showpage a:hover,.showpageNum a:hover{background-color:#777;color:#fff}.showpage a,.showpageNum a{transition:all .2s ease-in}.showpageOf{display:none}.showpage a,.showpageNum a{margin:0 4px}.showpagePoint{margin:0 2px 0 0}.showpagePoint{display:inline-block;font-size:14px;line-height:40px;border:none;background:#fff;margin:0 3px;color:#000;height:40px;width:40px;text-align:center;float:none;padding:0;position:relative;background-color:#777;color:#fff}.showpageNum a{display:inline-block;font-size:14px;line-height:40px;border:none;background:#fff;margin:0 3px;color:#000;height:40px;width:40px;text-align:center;float:none;padding:0;position:relative;text-decoration:none}.showpage a{float:right;display:inline-block;font-size:14px;line-height:40px;border:none;background:#fff;margin:0 3px;color:#000;height:40px;text-align:center;padding:0 20px;position:relative;text-decoration:none}.showpageOf{display:none}
 </style>
-`);
+				`);		
+        },
+		default: function(){
+			jQuery('head').append(`
+/*****************************************
+Page navigation
+******************************************/
+<style type="text/css">
+#blog-pager{display:block;-webkit-border-radius:0;-moz-border-radius:0;-o-border-radius:0;border-radius:0;padding:0;margin:0 0 30px;list-style:none;text-align:center}
+#blog-pager-newer-link{float:left;background: #fff;line-height:40px;border:none;background:#fff;margin:3px;padding:3px;height:40px;}
+#blog-pager-older-link{float:right;background: #fff;line-height:40px;border:none;background:#fff;margin:3px;padding:3px;height:40px;}
+#blog-pager{text-align:center;}
+</style>
+				`);
+		}        
+	},
+
+}
+
+
+
 
 // jQuery(document).ready(function () {
 // 	if( jQuery("body").hasClass("isPage") || jQuery("body").hasClass(" isSingleItem") ){ return; }
