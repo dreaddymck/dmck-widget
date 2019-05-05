@@ -1,17 +1,8 @@
 "use strict"
 const dmck_client =  {
-    init: function(arrObj){ 
-        console.log("debug")       
+    init: function(widget){ 
         let r = new dmck_widget();
-        r.settings = arrObj;
-        // enabled pagination on wordpress front page
-        if(typeof paginate !== "undefined" && ! paginate.enabled && jQuery("body").hasClass("home") ) {            
-            paginate.func = function(){
-                dmck_client.init(arrObj);
-            };
-            paginate.enabled = true;
-            paginate.setup();            
-        }
+        r.settings = widget;
         r.init();
         return;      
     },
@@ -27,16 +18,16 @@ const dmck_client =  {
         }
         else 
         if(typeof dmck_client !== "undefined" ){            
-            if( typeof dmck_client.globals.tags === "string" ){
+            if( typeof dmck_client.globals.tags  !== "undefined" ){
                 return dmck_client.globals.tags;                
             } 
             else
-            if( typeof dmck_client.globals.category === "string" ){
+            if( typeof dmck_client.globals.category !== "undefined" ){
                 return dmck_client.globals.category;                
             } 
             else 
-            if( typeof dmck_client.globals.label === "string" ) {
-                return dmck_client.globals.label.replace(/\|/g, " OR ");
+            if( typeof dmck_client.globals.label !== "undefined" ) {
+                return dmck_client.globals.label;
             }           
         }
         return "";
@@ -299,7 +290,10 @@ class dmck_widget {
             if(config.url.match(/www.googleapis.com\/youtube\/v3/)){
                 url = url + dmck_client.page.blogger(config.header.title);
             }else
-            if( config.data && config.data.route && config.data.route.match(/public.php\?op\=rss/) && config.data.route.match(reg) ){
+            if(config.url.match(/www.reddit.com\/search.json/)){
+                config.data.q = config.data.q ? config.data.q : dmck_client.query();
+            }else
+            if( config.data && config.data.route && config.data.route.match(/tiny-rss\/public.php\?op\=rss/) && config.data.route.match(reg) ){
                 let lo  = dmck_client.page.limitoffset(1);
                 config.data.route = config.data.route.replace(reg, lo);
             }
