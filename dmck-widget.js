@@ -279,23 +279,29 @@ class dmck_widget {
 
         let request = function(config){
             let url = config.url; 
-            let reg = new RegExp( /&limit\=\d&offset\=\d/, 'g' ) //a hack to fix tiny rss pagination routine
+            let reg_lim_off = new RegExp( /&limit\=\d&offset\=\d/, 'g' ) //tiny tiny rss pagination routine
+            let reg_q = new RegExp(/q\=&/,'g') // youtube query
             
             if(config.url.match(/wp-json\/wp\/v2\/posts\?per_page=1/)){
                 url = url + dmck_client.page.wordpress();
             }else
             if(config.url.match(/www.googleapis.com\/blogger\/v3/)){
-                url = url + dmck_client.page.blogger(config.header.title);
+                url = url + dmck_client.page.blogger(config.header.title); //apply next/previous page tokens
             }else
             if(config.url.match(/www.googleapis.com\/youtube\/v3/)){
-                url = url + dmck_client.page.blogger(config.header.title);
+                url = url + dmck_client.page.blogger(config.header.title); //apply next/previous page tokens
+                if(config.url.match(reg_q)) {
+                    let q = dmck_client.query();
+                    if(q){ url = url.replace(reg_q,"q=" + q + "&") }
+                    else{return}
+                }
             }else
             if(config.url.match(/www.reddit.com\/search.json/)){
                 config.data.q = config.data.q ? config.data.q : dmck_client.query();
             }else
-            if( config.data && config.data.route && config.data.route.match(/tiny-rss\/public.php\?op\=rss/) && config.data.route.match(reg) ){
+            if( config.data && config.data.route && config.data.route.match(/tiny-rss\/public.php\?op\=rss/) && config.data.route.match(reg_lim_off) ){
                 let lo  = dmck_client.page.limitoffset(1);
-                config.data.route = config.data.route.replace(reg, lo);
+                config.data.route = config.data.route.replace(reg_lim_off, lo);
             }
             jQuery(config.target).html("").hide();
             if(config.data && !config.data.q && !config.data.route){return}
