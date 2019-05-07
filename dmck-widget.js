@@ -58,20 +58,20 @@ const dmck_client =  {
         },
         wordpress: function(){ 
             let res = "";
-            if(typeof paginate !== "undefined" && paginate.enabled ){ res = "&page=" + paginate.paging.page; }
+            if(typeof paginate !== "undefined" && paginate.enabled ){ res = paginate.paging.page; }
             else
-            if( dmck_client.globals.page ){ res = "&page=" + dmck_client.globals.page; }
+            if( dmck_client.globals.page ){ res = dmck_client.globals.page; }
             return res;
         },
-        limitoffset: function(limit){
-            let res = "&limit=" + limit + "&offset=0"; 
+        limitoffset: function(params){
+            let res = "&limit=" + params.limit + "&offset=" + params.offset; 
             if(typeof paginate !== "undefined" && paginate.enabled ){ 
-                res = "&limit=" + limit + "&offset=" + (parseInt(paginate.paging.page) - 1) * limit; 
+                res = "&limit=" + params.limit + "&offset=" + (parseInt(paginate.paging.page) - 1) * params.limit; 
             }
             else
             if(dmck_client.globals.page ){ 
-                res = "&limit=" + limit + "&offset=" + (parseInt(dmck_client.globals.page) - 1) * limit; 
-            }            
+                res = "&limit=" + params.limit + "&offset=" + (parseInt(dmck_client.globals.page) - 1) * params.limit; 
+            }       
             return res;            
         },
         blogger: function(id){
@@ -239,6 +239,15 @@ const dmck_client =  {
             console.log("No subreddits match the search query!");
         }
     },
+    get_params: function(url){
+        let param = url.substring(url.indexOf('?') + 1).split('&');
+        let result = {};
+        for(let i = 0; i < param.length; i++){
+            param[i] = param[i].split('=');
+            result[param[i][0]] = param[i][1];
+        }
+        return result; 
+    },
     is_url: function(str){
       let regexp =  /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
             if (regexp.test(str)) { return true; }
@@ -281,30 +290,47 @@ class dmck_widget {
             let url = config.url; 
             let reg_lim_off = new RegExp( /&limit\=\d&offset\=\d/, 'g' ) //tiny tiny rss pagination routine
             let reg_q = new RegExp(/q\=&/,'g') // youtube query
+            let reg_word = new RegExp(/per_page\=\d/,'g')
             
-            if(config.url.match(/wp-json\/wp\/v2\/posts\?per_page=1/)){
-                url = url + dmck_client.page.wordpress();
+            if(url.match(/wp-json\/wp\/v2\/posts/)){
+                if(url.match(reg_word)){
+                    url = url + "&page=" + dmck_client.page.wordpress(); // apply wordpress page number
+                }else
+                if(typeof config.data !== 'undefined' && config.data.per_page != ""){
+                    config.data.page = dmck_client.page.wordpress(); // apply wordpress page number
+                }                 
             }else
-            if(config.url.match(/www.googleapis.com\/blogger\/v3/)){
+            if(url.match(/www.googleapis.com\/blogger\/v3/)){
                 url = url + dmck_client.page.blogger(config.header.title); //apply next/previous page tokens
             }else
-            if(config.url.match(/www.googleapis.com\/youtube\/v3/)){
-                url = url + dmck_client.page.blogger(config.header.title); //apply next/previous page tokens
-                if(config.url.match(reg_q)) {
+            if(url.match(/www.googleapis.com\/youtube\/v3/)){                
+                if(url.match(reg_q)) {
+                    url = url + dmck_client.page.blogger(config.header.title); //apply next/previous page tokens
                     let q = dmck_client.query();
                     if(q){ url = url.replace(reg_q,"q=" + q + "&") }
                     else{return}
+                }else
+                if(typeof config.data !== 'undefined' && config.data.q == ""){
+                    let q = dmck_client.query();
+                    if(q){ 
+                        config.data.q = q
+                        config.data.pageToken = dmck_client.page.blogger(config.header.title);
+                    }
+                    else{return}
                 }
             }else
-            if(config.url.match(/www.reddit.com\/search.json/)){
+            if(url.match(/www.reddit.com\/search.json/)){
                 config.data.q = config.data.q ? config.data.q : dmck_client.query();
             }else
-            if( config.data && config.data.route && config.data.route.match(/tiny-rss\/public.php\?op\=rss/) && config.data.route.match(reg_lim_off) ){
-                let lo  = dmck_client.page.limitoffset(1);
-                config.data.route = config.data.route.replace(reg_lim_off, lo);
+            if(config.data && config.data.route && config.data.route.match(/tiny-rss\/public.php\?op\=rss/) ){
+                if(config.data.route.match(reg_lim_off)){
+                    let params = dmck_client.get_params(config.data.route);
+                    let limitoffset  = dmck_client.page.limitoffset(params);
+                    config.data.route = config.data.route.replace(reg_lim_off, limitoffset);
+                }
             }
             jQuery(config.target).html("").hide();
-            if(config.data && !config.data.q && !config.data.route){return}
+            // if(config.data && !config.data.q && !config.data.route){return}
             jQuery.ajax({ 
                 type: config.type?config.type:"GET", 
                 url:url,
