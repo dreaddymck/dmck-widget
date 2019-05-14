@@ -17,9 +17,6 @@ const blog_nav_menu = {
 <li class="active has-children">
 	<a href="/">Home</a>
 	<ul>
-		<li itemprop="name">
-			<a href="https://dreaddymck.com/Public/MUSIC/AUDIOBOOK/stalker-anomaly/a-loner-story.m3u" itemprop="url">A Loners story (WIP): M3U download</a>
-		</li>	
 		<li itemprop="name"><a href="https://iandigaming.blogspot.com/p/dump.html" itemprop="url">Post Fail</a></li>
 		<li itemprop="name"><a href="https://iandigaming.blogspot.com/p/blog-page.html" itemprop="url">Video Fail</a></li>
 	</ul>
