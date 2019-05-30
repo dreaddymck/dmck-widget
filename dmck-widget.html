@@ -1,37 +1,199 @@
-<p class="reddit-rss-widget"></p>
-<p class="dreaddymck-blogspot-rss-widget"></p>
-       
 <script language='javascript' type='text/javascript'>
-//<![CDATA[
-    const keys = {blogger:""};
-    const widget = [
-        // reddit.search.blogspot.com feed
-        {
-            display:{
-                "":["debug","item"],               
+    //<![CDATA[
+    const dmck_config = { keys: { blogger: "" }, } 
+    const dmck_collection = 
+    {
+    
+        widget: [
+            // reddit.search.blogspot.com feed
+            {
+                display:{
+                    "":["debug","item"],               
+                },
+                config:{ 
+                    url: "https://www.reddit.com/search.json", 
+                    target: ".reddit-rss-widget",
+                    header:{title: "/r/",url:"https://reddit.com/"},
+                    truncate:600,
+                    render: "reddit_render",
+                    data:{ after:"", before:"", category:"", count:"", include_facets:"", limit:1, q:'', restrict_sr:"", show:"", sort:"new", sr_detail:"", t:"", type:"" }
+                },
             },
-            config:{ 
-                url: "https://www.reddit.com/search.json", 
-                target: ".reddit-rss-widget",
-                header:{title: "/r/",url:"https://reddit.com/"},
-                truncate:600,
-                render: "reddit_render",
-                data:{ after:"", before:"", category:"", count:"", include_facets:"", limit:1, q:'', restrict_sr:"", show:"", sort:"new", sr_detail:"", t:"", type:"" }
+            //-- dreaddymck-blogspot.com JSON CLIENT  -- 
+            {
+                display: {
+                    "":["debug","item"],                    
+                },
+                config: { 
+                    url: "https://www.googleapis.com/blogger/v3/blogs/8204170489529836754/posts?maxResults=1&key=" + keys.blogger,
+                    target: ".dreaddymck-blogspot-rss-widget",
+                    header:{title: "i & i dreaddymck",url:"https://dreaddymck.blogspot.com"},
+                    truncate:600,
+                    render:"blogger_render", 
+                }, 
+            },
+        ],
+    
+        menu: {
+            home: {
+                custom: {
+                    "iandigaming.blogspot.com" : `
+    <li class="active has-children">
+        <a href="/">Home</a>
+        <ul>
+            <li itemprop="name">
+                <a href="https://iandigaming.blogspot.com/p/audio.html" itemprop="url">Audio</a>
+            </li>		
+            <li itemprop="name"><a href="https://iandigaming.blogspot.com/p/dump.html" itemprop="url">Post Fail</a></li>
+            <li itemprop="name"><a href="https://iandigaming.blogspot.com/p/blog-page.html" itemprop="url">Video Fail</a></li>
+        </ul>
+    </li>		
+                            `,
+                    "dreaddymck.blogspot.com" : `
+    <li class="active has-children">
+        <a href="/">Home</a>
+        <ul>
+            <li itemprop='name'><a href='https://dreaddymck.com' itemprop='url'>Dreaddymck.com</a></li>
+        </ul> 
+    </li>		
+                            `,					
+                },
+                default:  `<li class="active"><a href="/">Home</a></li>`,
+            },
+            extended : {
+                "iandigaming.blogspot.com" : `<li> <a href='https://iandigaming.blogspot.com/'>I and I gaming</a> </li>`,
+                "iandiwatching.blogspot.com" : `<li> <a href='https://iandiwatching.blogspot.com/'>I and I watching</a> </li>`,
+                "dreaddymck.blogspot.com" : `<li> <a href='https://dreaddymck.blogspot.com/'>I and I dreaddymck</a> </li>`,
+                "iandicoding.blogspot.com" : `<li> <a href='https://iandicoding.blogspot.com/'>I and I coding</a> </li>`,
+                "iandimeme.blogspot.com" : `<li> <a href='https://iandimeme.blogspot.com'>I and I meme</a> </li>`,		
             },
         },
-        //-- dreaddymck-blogspot.com JSON CLIENT  -- 
-        {
-            display: {
-                "":["debug","item"],                    
+        
+        todo: {
+            init: function(){
+                dmck_collection.todo.hide_selectors();
+                dmck_collection.todo.labels();
+                if( ! dmck_collection.todo.popular_posts.hide(["isSearch","isPost","isSingleItem"]) ) { dmck_collection.todo.popular_posts.resize(); }
+                dmck_collection.todo.menu(dmck_collection.menu);
+                let _widget = dmck_collection.todo.filter(dmck_collection.widget); // prefilter the widget with custom rules
+                dmck_collection.todo.page(_widget);  
             },
-            config: { 
-                url: "https://www.googleapis.com/blogger/v3/blogs/8204170489529836754/posts?maxResults=1&key=" + keys.blogger,
-                target: ".dreaddymck-blogspot-rss-widget",
-                header:{title: "i & i dreaddymck",url:"https://dreaddymck.blogspot.com"},
-                truncate:600,
-                render:"blogger_render", 
-            }, 
-        },
-    ];
-//]]>
-</script>
+            filter: function(widget){
+    
+                for(let w in widget){
+    
+                    //console.log(widget[w])
+                }
+    
+                return widget;
+            },
+            menu: function(menu){	
+                jQuery('.nav-wrapper > div > ul').html('');		
+                let hostname = location.hostname;            
+                jQuery('.nav-wrapper > div > ul').append( menu.home.custom[hostname] ? menu.home.custom[hostname] : menu.home.default );	
+                for(let i in menu.extended ){
+                    if(i == hostname){ continue; }
+                    jQuery('.nav-wrapper > div > ul').append(menu.extended[i]);
+                }	
+            },
+            hide_selectors: function(){
+                let selector = [
+                    "#HTML1 > h2",
+                    "#HTML2 > h2",
+                    "#HTML3 > h2",
+                ];
+                for(let s in selector){ if( jQuery(selector[s]).length ){ jQuery(selector[s]).hide() }; }
+            },
+            labels: function(){
+                if(typeof dmck_client.globals === "undefined") { dmck_client.globals = {} }
+    
+                let label = function(){let e="/search/label/";if(-1!=location.href.indexOf(e))return-1!=location.href.indexOf("?updated-max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?updated-max")):-1!=location.href.indexOf("?&max")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?&max")):-1!=location.href.indexOf("?max-results")?location.href.substring(location.href.indexOf(e)+e.length,location.href.indexOf("?max-results")):location.href.substring(location.href.indexOf(e)+e.length,location.href.length)};
+                dmck_client.globals.label = label();
+    
+                let tags = [];
+                jQuery(".widget-tags").find("a").each(function(){  tags.push( $(this).text() ); });
+                dmck_client.globals.tags = tags.join(" OR ");
+                
+            },
+            popular_posts: {
+    
+                resize: function() {
+                    //Popular Post img resize css
+                    jQuery('head').append(`
+    <style type="text/css">
+    /***** Popular Post *****/
+    .sidebar .PopularPosts ul{counter-reset:popularcount;margin:0;padding:0}.sidebar .PopularPosts ul li{width:100%;list-style:none!important;padding:0!important;margin-bottom:20px;position:relative;border:0}.sidebar .PopularPosts .item-thumbnail a{clip:auto;display:block;height:auto}.sidebar .PopularPosts .item-thumbnail{width:100%;height:auto;position:relative;margin-bottom:15px}.sidebar .PopularPosts .item-thumbnail::before{background:rgba(0,0,0,0) none repeat scroll 0 0;border-bottom:29px solid #fff;border-left:29px solid transparent;border-right:29px solid transparent;bottom:0;content:&quot;width:0;left:0;right:0;margin-left:auto;margin-right:auto;position:absolute;z-index:3}.sidebar .PopularPosts .item-thumbnail:after{color:#000;content:counter(popularcount,decimal);counter-increment:popularcount;font:13px &quot;position:absolute;bottom:0;text-align:center;margin:0 auto;left:0;right:0;z-index:4}.sidebar .PopularPosts .item-thumbnail img{position:relative;top:auto;right:auto;bottom:auto;left:auto;width:100%;height:120px;object-fit:cover}.sidebar .PopularPosts .item-title{font:15px &#39;text-align:center;margin:0 auto;padding-bottom:10px;border-bottom:1px solid #000}.sidebar .PopularPosts .item-title a{color:#000;text-decoration:none}.sidebar .PopularPosts .item-snippet{padding:10px 15px;font:13px;display: inline-block; &quot}
+    </style>
+                    `);			
+                    //Popular Post img resize script
+                    jQuery(".popular-posts img").attr("src",function(t,e){return e.replace("/s72-c/","/s350-c/")}),jQuery(".popular-posts ul li .item-snippet").each(function(){let t=jQuery(this).text().substr(0,60),e=t.lastIndexOf(" ");e>10&&jQuery(this).text(t.substr(0,e).replace(/[?,!\.-:;]*$/,"..."))}),jQuery(".popular-posts ul li .item-content a").each(function(){let t=$(this).text().substr(0,60),e=t.lastIndexOf(" ");e>=6&&jQuery(this).text(t.substr(0,e).replace(/[?,!\.-:;]*$/,"..."))});
+                    return true;
+                },
+                hide: function(arr){
+    
+                    if( jQuery("body").hasClasses( arr ) ){ 
+                        jQuery("#PopularPosts1").hide();
+                        return true; 
+                    }
+                    return false;				
+                },			
+            },
+    
+            page: function(widget){
+    
+                let pageCount = jQuery('#blogger-posts-size').attr("alt") ? jQuery('#blogger-posts-size').attr("alt") : 1;
+                let displayPageNum = dmck_client.is_mobile() ? 1 : 3;
+                new Promise(function(resolve, reject) {
+                    if( jQuery("body").hasClass("isPage") || jQuery("body").hasClass("isPage") || jQuery("body").hasClass("isSingleItem") ){ 
+                        resolve(true);
+                    }else{
+                        resolve(
+                            // blog_paginate.show = false,
+                            blog_paginate.init({
+                                pageCount: pageCount,
+                                displayPageNum: displayPageNum,
+                                upPageWord: '&#171; Prev',
+                                downPageWord: 'Next &#187;'
+                            })                   
+                        );
+                    }
+                })
+                .then(
+                    function(result){
+                        if(typeof blog_paginate !== 'undefined' && blog_paginate.currpage ){ dmck_client.globals.page=blog_paginate.currpage }
+                        dmck_client.init(widget);
+                    },
+                    function(error){
+                        console.log(error);  
+                    } 
+                ); 
+                
+            },
+        },    
+    
+        widget_custom_content_render: function() {
+            // custom content
+            let notice = "<h3 id='dmck_notice'>Note: content contained in this blog, is non-canon and unofficial.</h3>";
+            let ebay_widget_custom = function(){
+                let content = jQuery(".ebay-widget").html().split(/<br class="clear">/);
+                let html = jQuery(`<div class="row">`)
+                for(let c in content){ html.append(  jQuery(`<div class="col-md-6">`).html(content[c]) ) }
+                jQuery(".ebay-widget").html(html);
+            }
+            if(jQuery("body").hasClass("isHomepage") && ! jQuery("#dmck_notice").length ){ jQuery(notice).insertBefore(".featured-posts").hide().fadeIn("slow"); }            
+            if(jQuery(".ebay-widget").length){  ebay_widget_custom();  }
+            if(jQuery("body").hasClass("isHomepage") ){
+                // new Promise(function(resolve, reject) {
+                //     jQuery.ajax({type: "GET", url:"/feeds/posts/default/?max-results=9999&orderby=published&alt=json-in-script", dataType:"", data:"", })
+                // .done(function(data){resolve(data)})
+                // .fail(function (xhr, textStatus, errorThrown) { reject(xhr.responseText); }); 
+                // })
+                // .then(
+                //     function(result){ console.log(result) },
+                //     function(error){ console.log(error); } 
+                // );                
+            }
+        },    
+    }
+    //]]>
+    </script>
