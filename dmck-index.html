@@ -9,8 +9,8 @@
 //<![CDATA[
 jQuery(document).ready(function(){
 
+    if(typeof dmck_config === 'undefined'){console.log("missing dependency: widget config"); return;} 
 	if(typeof dmck_collection === 'undefined'){console.log("missing dependency: widget collection"); return;}
-    if(typeof dmck_collection.widget === 'undefined'){console.log("missing dependency: widget object"); return;} 
 	if(typeof dmck_client === 'undefined'){console.log("missing dependency: dmck-widget.js"); return;}
 	
 	// hasClasses
