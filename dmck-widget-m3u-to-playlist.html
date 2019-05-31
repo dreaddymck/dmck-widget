@@ -1,0 +1,149 @@
+<!--  
+HTML5 mp3 audio playlist rendered from an text m3u source
+jQuery,  Promises, Bootstrap, Fontawesome,
+-->
+<style>
+.audio-panel{border:none!important}#playlist,audio{width:100%}#playlist{list-style: none;padding: 0;}#playlist > li.list-group-item{border: 1px solid transparent;}#playlist > li.list-group-item.active > a {color:#fff}
+.list-group-item.active,.list-group-item.active:focus,.list-group-item.active:hover{z-index:2;color:#fff;background-color:#333;border-color:#333}
+</style>
+
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js' type='text/javascript'></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link crossorigin='anonymous' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' integrity='sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=' rel='stylesheet'/>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>A Loners Story</h2>
+        <small title="download m3u playlist">S.T.A.L.K.E.R. Anomaly Fan Fiction audiobook (WIP)- 
+            <a href="https://dreaddymck.com/Public/MUSIC/AUDIOBOOK/stalker-anomaly/iandigaming-a-loner-story.m3u">
+                <i class="fa fa-download" aria-hidden="true"></i>
+            </a>            
+        </small>
+        <p id="playlist-1"></p>    
+    </div>
+    <div class="col-md-6">
+        <h2>The Rude Ones Story.</h2>
+        <small title="download m3u playlist">S.T.A.L.K.E.R. Anomaly Fan Fiction  audiobook (WIP)- 
+            <a href="https://dreaddymck.com/Public/MUSIC/AUDIOBOOK/stalker-anomaly-rudeone/iandigaming-the-rude-one-story.m3u">
+                <i class="fa fa-download" aria-hidden="true"></i>
+            </a>
+        </small>        
+        <p id="playlist-2"></p>    
+    </div>          
+</div>
+
+<script language='javascript' type='text/javascript'>
+//<![CDATA[
+const dmck_widget_playlist = {
+    globals: [],  
+    init: function(obj){        
+        for(let o in obj){
+            dmck_widget_playlist.globals[obj[o].target] = {audio:"", playlist:"", tracks:"", current:"",len:"" }; 
+            dmck_widget_playlist.playlist(obj[o]); 
+        }         
+    },
+    setup: function (obj) {
+        glob = dmck_widget_playlist.globals[obj.target];
+        glob.current = 0;
+        glob.audio = $(obj.target).find('#audio'); 
+        glob.playlist = $(obj.target).find('#playlist');
+        glob.tracks = glob.playlist.find('li a');
+        glob.len = glob.tracks.length - 1;
+        glob.audio[0].volume = 0.5;
+
+        if( glob.audio[0].src ) {
+            glob.audio[0].play();
+        }
+        glob.playlist.find('a').click(function (e) {
+            let glob = dmck_widget_playlist.globals[obj.target]
+            e.preventDefault();
+            link = $(this);
+            glob.current = link.parent().index();
+            dmck_widget_playlist.run(link, obj.target);
+        });
+        glob.audio[0].addEventListener('ended', function (e) {
+            let glob = dmck_widget_playlist.globals[obj.target]
+            glob.current++;
+            if (glob.current == glob.len) {
+                glob.current = 0;
+                link = glob.playlist.find('a')[0];
+            } else {
+                link = glob.playlist.find('a')[glob.current];
+            }
+            dmck_widget_playlist.run( $(link), obj.target);
+        });
+    },
+    pause_all: function(){
+        $('audio').each(function(){
+            this.pause(); // Stop playing
+            this.currentTime = 0; // Reset time
+        }); 
+    },
+    run: function (link, target) {
+        dmck_widget_playlist.pause_all();
+        glob = dmck_widget_playlist.globals[target]
+        glob.audio[0].src = link.attr('href');
+        par = link.parent();
+        par.addClass('active').siblings().removeClass('active');
+        glob.audio[0].load();
+        glob.audio[0].play();
+    },
+    playlist : function(obj) {
+
+        let render = function(result){             
+            
+            let html = `
+<div class="audio-panel">
+    <audio id="audio" preload="auto" tabindex="0" controls><source src=""></audio>
+</div>
+<ul id="playlist"></ul>    
+            `;            
+
+            let res     = result.split("\n");
+            let li      = "";
+            let active  = "active";
+            let name    = "";
+            
+            for(let r in res){
+                if(r > 0) active = "";
+                name    =  res[r].split('\\').pop().split('/').pop().replace("\.mp3","");
+                li      = li + ` <li class="list-group-item ` + active + `"> <a href="`+ res[r] +`"> `+ decodeURIComponent(name) +` </a> </li> `;
+            }
+            $(obj.target).append( html ).find("#playlist").html("").append(li);
+            dmck_widget_playlist.setup(obj);
+        }
+        new Promise(function(resolve, reject) {
+            jQuery.ajax({ 
+                type: "GET", 
+                url: obj.url,
+            })
+            .done(function (data) { resolve(data); })
+            .fail(function (xhr, textStatus, errorThrown) { console.log(xhr.responseText); console.log(textStatus); reject(false); })           
+        })
+        .then(
+            function(result){ render(result)},
+            function(error){ console.log(error); } 
+        );        
+    }    
+}
+
+jQuery(document).ready(function(){
+    // jQuery("div.content-wrapper > div > div > div.col-md-4").detach();
+    // jQuery("div.content-wrapper > div > div > div.col-md-8").removeClass("col-md-8").addClass("col-md-12"); 
+    jQuery(".post-head .entry-title").css("text-align","center");      
+    dmck_widget_playlist.init([
+        {
+            url:"https://dreaddymck.com/Public/MUSIC/AUDIOBOOK/stalker-anomaly/iandigaming-a-loner-story.m3u",
+            target:"#playlist-1",
+        }, 
+        {
+            url:"https://dreaddymck.com/Public/MUSIC/AUDIOBOOK/stalker-anomaly-rudeone/iandigaming-the-rude-one-story.m3u",
+            target:"#playlist-2",
+        },            
+
+    ])
+});
+
+    //]]>
+</script>
