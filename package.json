@@ -1,6 +1,6 @@
 {
   "name": "dmck-widget",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "simple script to fascilitate remixing content between platforms",
   "main": "dmck-index.html",
   "scripts": {
