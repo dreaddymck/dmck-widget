@@ -99,16 +99,27 @@ const dmck_client =  {
     },
     tiny_rss: function(data,config){        
         let render = function(entry){
+            let link = "#";
+            
+            if(typeof entry.link === "object"){
+                link = entry.link[0] ? entry.link[0]["@attributes"].href : entry.link["@attributes"].href;
+            }
+            
             jQuery('<h2>').append(
-                jQuery('<a>',{ text: entry.title, title: entry.title, href: entry.link["@attributes"].href})
+                jQuery('<a>',{ text: entry.title, title: entry.title, href: link})
             ).appendTo(config.target);
             jQuery(entry.content).appendTo(config.target);
+            if(config.show_summary){
+                jQuery(entry.summary).appendTo(config.target);
+            }            
             jQuery("<br>").addClass("clear").appendTo(config.target);
         }
         data = JSON.parse(data);
         if( data.entry instanceof Array ){
             for(var d in data.entry){ render(data.entry[d]); }
-        } else { render(data.entry); }
+        } else { 
+            render(data.entry); 
+        }
         if(typeof config.callback === "function"){ config.callback(); }        
         jQuery(config.target).show();
     },       
