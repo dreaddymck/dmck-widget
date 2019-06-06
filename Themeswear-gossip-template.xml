@@ -765,9 +765,11 @@ var _0xbbea=["\x73\x72\x63","\x2F\x73\x33\x35\x2D\x63\x2F","\x2F\x73\x38\x30\x2D
 										 <!-- Image Append END. -->
 			 <b:include data='top' name='status-message'/>
 				<!-- posts -->
-				<span id="blogger-posts-size" expr:alt='data:posts.size'></span>  				
+				
 				<div class='blog-posts hfeed'>
 				  <b:loop values='data:posts' var='post'>
+			
+					
 		<div class='post-archive list-style left-img'>
 		<ul>
 		<b:include data='post' name='post'/>
@@ -1493,7 +1495,7 @@ var _0xbbea=["\x73\x72\x63","\x2F\x73\x33\x35\x2D\x63\x2F","\x2F\x73\x38\x30\x2D
    <span itemscope='' itemtype='http://data-vocabulary.org/Breadcrumb'><a expr:href='data:blog.homepageUrl' itemprop='url'><span itemprop='title'>Home</span></a></span> / 
    <b:loop index='x' values='data:post.labels' var='label'>
 	  <b:if cond='data:x==0'>
-		 <a expr:href='data:label.url + &quot;?max-results=9&quot;' rel='tag nofollow'>
+		 <a expr:href='data:label.url' rel='tag nofollow'>
 			<data:label.name/>
 		 </a>
 	  </b:if>
@@ -1676,7 +1678,7 @@ var _0xbbea=["\x73\x72\x63","\x2F\x73\x33\x35\x2D\x63\x2F","\x2F\x73\x38\x30\x2D
    <b:if cond='data:blog.pageType == &quot;item&quot;'>
 <div class='post-meta-bottom'>
    <div class='widget-tags'>
-	  <b:loop values='data:post.labels' var='label'><a expr:href='data:label.url + &quot;?max-results=9&quot;'><data:label.name/></a><b:if cond='data:label.isLast != &quot;true&quot;'/></b:loop>
+	  <b:loop values='data:post.labels' var='label'><a expr:href='data:label.url'><data:label.name/></a><b:if cond='data:label.isLast != &quot;true&quot;'/></b:loop>
    </div>
    <!-- /.widget-tags -->
    <!-- Begin share Icons -->
